@@ -1,0 +1,155 @@
+import {Component, Input, OnInit, Output, EventEmitter} from '@angular/core';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {CatalogueModel, DeliveryModel, UserModel} from '../../models';
+import {UserAdministrationHttpService} from '../../services/user-administration-http.service';
+import {MessageService} from '../../services/message.service';
+import {MenuItem} from 'primeng/api';
+import {PhoneModel} from '../../models/phone.model';
+import { Router } from '@angular/router';
+import { ServerResponse } from '../../models/server-response';
+import { DeliveryAdministrationHttpService } from 'src/app/services/delivery-administration.service';
+
+@Component({
+  selector: 'app-register',
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.css']
+})
+export class RegisterComponent implements OnInit {
+  @Input() user: UserModel = {};
+  @Output() userNewOrUpdate = new EventEmitter<UserModel>();
+
+  registerUser: boolean = true;
+  delivery: DeliveryModel = {};
+  user_id: number = 0;
+  formRegister: FormGroup;
+  automaticPassword: FormControl;
+  progressBar: boolean = false;
+  identificationTypes: CatalogueModel[] = [];
+  phoneOperators: CatalogueModel[] = [];
+  phoneTypes: CatalogueModel[] = [];
+  phoneLocations: CatalogueModel[] = [];
+
+  constructor(private formBuilder: FormBuilder,
+              private userAdministrationHttpService: UserAdministrationHttpService,
+              private deliveryAdministrationHttpService: DeliveryAdministrationHttpService,
+              public messageService: MessageService,
+              private router: Router,
+              ) {
+    this.formRegister = this.newFormRegister();
+    this.automaticPassword = this.formBuilder.control(false);
+
+  }
+
+  ngOnInit(): void {
+    this.formRegister.patchValue(this.user);
+    this.getIdentificationTypes();
+  }
+
+  newFormRegister() {
+    return this.formBuilder.group({
+      id: [null],
+      identificationType: [null, [Validators.required]],
+      username: [null, [Validators.required]],
+      name: [null, [Validators.required]],
+      lastname: [null, [Validators.required]],
+      email: [null, [Validators.required, Validators.email]],
+      password: [null, [Validators.required, Validators.minLength(8)]],
+      passwordChange: [true],
+    });
+  }
+
+  getIdentificationTypes() {
+    this.userAdministrationHttpService.getCatalogues('IDENTIFICATION_TYPE').subscribe(
+      response => {
+        this.identificationTypes = response.data;
+      }, error => {
+        this.messageService.error(error);
+      }
+    );
+  }
+
+  onSubmit() {
+    console.log(this.formRegister);
+    if (this.formRegister.valid) {
+      if (this.idField.value) {
+        this.updateUser(this.formRegister.value);
+      } else {
+        this.storeUser(this.formRegister.value);
+      }
+    } else {
+      this.formRegister.markAllAsTouched();
+    }
+  }
+
+  redirect() {
+    console.log('this.formRegister');
+    this.router.navigate(['/authentication/login']);
+  }
+
+  storeUser(user: UserModel): void {
+    this.progressBar = true;
+    this.userAdministrationHttpService.storeUser(user).subscribe(
+      response => {
+        this.messageService.success(response);
+        this.formRegister.reset();
+        this.userNewOrUpdate.emit(user);
+        console.log(response)
+        this.user_id = response.data.id;
+        this.progressBar = false;
+        this.registerUser = false
+        // this.storeDelivery()
+      },
+      error => {
+        this.messageService.error(error);
+        this.progressBar = false;
+      }
+    );
+  }
+
+
+  updateUser(user: UserModel): void {
+    this.progressBar = true;
+    this.userAdministrationHttpService.updateUser(user.id, user).subscribe(
+      response => {
+        this.messageService.success(response);
+        this.formRegister.reset();
+        this.userNewOrUpdate.emit(user);
+        this.progressBar = false;
+      },
+      error => {
+        this.messageService.error(error);
+        this.progressBar = false;
+      }
+    );
+  }
+
+
+  get idField() {
+    return this.formRegister.controls['id'];
+  }
+
+  get identificationTypeField() {
+    return this.formRegister.controls['identificationType'];
+  }
+
+  get usernameField() {
+    return this.formRegister.controls['username'];
+  }
+
+  get nameField() {
+    return this.formRegister.controls['name'];
+  }
+
+  get lastnameField() {
+    return this.formRegister.controls['lastname'];
+  }
+
+  get emailField() {
+    return this.formRegister.controls['email'];
+  }
+
+  get passwordField() {
+    return this.formRegister.controls['password'];
+  }
+
+}

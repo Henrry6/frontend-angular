@@ -1,0 +1,74 @@
+<div *ngIf="registerUser">
+  <div class="main-header">
+    <div class="grid fluid m-4 justify-content-center 500">
+      <h1>Registrate Ahora</h1>
+    </div>
+    <div class=" flex flex-wrap align-items-center grid fluid mb-4 justify-content-center">
+      <form [formGroup]="formRegister" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label class="font-medium text-lg" for="identificationType">Tipo de documento</label>
+          <br>
+          <input class="w-22rem" pInputText id="identificationType" formControlName="identificationType"><br>
+          <div class="text-pink-500" *ngIf="identificationTypeField.invalid && (identificationTypeField.touched || identificationTypeField.dirty)">
+            falta el campo
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="font-medium text-lg" for="name">Nombre</label>
+          <br>
+          <input class="w-22rem" pInputText id="name" formControlName="name"><br>
+          <div class="text-pink-500" *ngIf="nameField.invalid && (nameField.touched || nameField.dirty)">
+            falta el campo
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="font-medium text-lg" for="lastname">Apellido</label>
+          <br>
+          <input class="w-22rem" pInputText id="lastname" formControlName="lastname">
+          <div class="text-pink-500" *ngIf="lastnameField.invalid && (lastnameField.touched || lastnameField.dirty)">
+            falta el campo
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="font-medium text-lg" for="username">Nombre usuario</label>
+          <br>
+          <input class="w-22rem" pInputText id="username" formControlName="username">
+          <div class="text-pink-500" *ngIf="usernameField.invalid && (usernameField.touched || usernameField.dirty)">
+            falta el campo
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="font-medium text-lg" for="email">Correo electrónico</label>
+          <br>
+          <input class="w-22rem" pInputText id="email" formControlName="email">
+          <div class="text-pink-500" *ngIf="emailField.invalid && (emailField.touched || emailField.dirty)">
+            falta el campo
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="font-medium text-lg" for="password">Contraseña</label>
+          <br>
+          <input class="w-22rem" pInputText id="password" formControlName="password">
+          <div class="text-pink-500" *ngIf="passwordField.invalid && (passwordField.touched || passwordField.dirty)">
+            falta el campo
+          </div>
+        </div>
+        <div class="flex flex-wrap align-items-center justify-content-center">
+          <button class="mt-5fadeinleft animation-duration-1000 flex align-items-center justify-content-center font-bold 500 m-2 px-5 py-3 shadow-3"
+          pButton type="submit" id="btnSubmit" label="Registrar" icon="pi pi-sign-in"></button>
+        </div>
+      </form>
+    </div>
+    <div class="flex flex-wrap align-items-center justify-content-center">
+      <button class="mt-5fadeinleft animation-duration-1000 flex align-items-center justify-content-center font-bold 500 m-2 px-5 py-3 shadow-3"
+      pButton type="button" (click)="redirect()" label="Loguearse" icon="pi pi-sign-in"></button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!registerUser" >
+  <app-delivery-form
+    [user_id]="user_id"
+  >
+</app-delivery-form>
+</div>
