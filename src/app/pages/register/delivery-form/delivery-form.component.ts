@@ -23,13 +23,11 @@ export class DeliveryFormComponent implements OnInit {
               public messageService: MessageService,
               private router: Router,) { 
           this.formDelivery = this.newFormDelivery();
-
       }
 
-  ngOnInit(): void {
-    console.log(this.user_id)
-  }
-    newFormDelivery = () =>{
+  ngOnInit(): void {}
+
+  newFormDelivery = () =>{
     return this.formBuilder.group({
       user_id: [null],
       id: [null],

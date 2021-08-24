@@ -1,13 +1,8 @@
 import {Component, Input, OnInit, Output, EventEmitter} from '@angular/core';
-import {FormArray, FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import {CatalogueModel, DeliveryModel, UserModel} from '../../models';
 import {UserAdministrationHttpService} from '../../services/user-administration-http.service';
 import {MessageService} from '../../services/message.service';
-import {MenuItem} from 'primeng/api';
-import {PhoneModel} from '../../models/phone.model';
-import { Router } from '@angular/router';
-import { ServerResponse } from '../../models/server-response';
-import { DeliveryAdministrationHttpService } from 'src/app/services/delivery-administration.service';
 
 @Component({
   selector: 'app-register',
@@ -25,24 +20,17 @@ export class RegisterComponent implements OnInit {
   automaticPassword: FormControl;
   progressBar: boolean = false;
   identificationTypes: CatalogueModel[] = [];
-  phoneOperators: CatalogueModel[] = [];
-  phoneTypes: CatalogueModel[] = [];
-  phoneLocations: CatalogueModel[] = [];
 
   constructor(private formBuilder: FormBuilder,
               private userAdministrationHttpService: UserAdministrationHttpService,
-              private deliveryAdministrationHttpService: DeliveryAdministrationHttpService,
               public messageService: MessageService,
-              private router: Router,
               ) {
     this.formRegister = this.newFormRegister();
     this.automaticPassword = this.formBuilder.control(false);
-
   }
 
   ngOnInit(): void {
     this.formRegister.patchValue(this.user);
-    this.getIdentificationTypes();
   }
 
   newFormRegister() {
@@ -58,18 +46,8 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  getIdentificationTypes() {
-    this.userAdministrationHttpService.getCatalogues('IDENTIFICATION_TYPE').subscribe(
-      response => {
-        this.identificationTypes = response.data;
-      }, error => {
-        this.messageService.error(error);
-      }
-    );
-  }
 
   onSubmit() {
-    console.log(this.formRegister);
     if (this.formRegister.valid) {
       if (this.idField.value) {
         this.updateUser(this.formRegister.value);
@@ -81,11 +59,6 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  redirect() {
-    console.log('this.formRegister');
-    this.router.navigate(['/authentication/login']);
-  }
-
   storeUser(user: UserModel): void {
     this.progressBar = true;
     this.userAdministrationHttpService.storeUser(user).subscribe(
@@ -93,11 +66,9 @@ export class RegisterComponent implements OnInit {
         this.messageService.success(response);
         this.formRegister.reset();
         this.userNewOrUpdate.emit(user);
-        console.log(response)
         this.user_id = response.data.id;
         this.progressBar = false;
         this.registerUser = false
-        // this.storeDelivery()
       },
       error => {
         this.messageService.error(error);

@@ -10,7 +10,7 @@ const routes: Routes = [
     path: '',
     component: RegisterComponent,
     data: {
-      roles: 'client|admin|guest'
+      roles: 'client|guest'
     },  
   },
   {
